@@ -35,7 +35,7 @@ nnoremap <C-Space> :VimDrawer<CR>
 ```
 Now you can invoke the drawer's buffers selector pressing `Ctrl + Space`.
 
-##Instalation
+##Installation
 
 You can install this plugin with Pathogen, Vundle and other plugin loaders.
 
