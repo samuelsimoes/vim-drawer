@@ -79,6 +79,30 @@ function! <SID>setup_tab()
   end
 endfunction
 
+function! <SID>match_space_tab(file_path)
+  let l:tabs = []
+
+  for tab_id in range(1, tabpagenr("$"))
+    call add(l:tabs, gettabvar(tab_id, "tablabel"))
+  endfor
+
+  let l:tab_name = 0
+  let l:tab_index = 0
+  " VimL sucks a lot so I can't check at the space name to check if it exists
+  let l:existing_space = 0
+  let l:spaces = <SID>get_spaces()
+
+  for space_name in keys(spaces)
+    if strlen(matchstr(a:file_path, spaces[space_name]))
+      let l:tab_index = (index(tabs, space_name) + 1)
+      let l:tab_name = space_name
+      let l:existing_space = 1
+    end
+  endfor
+
+  return { "existing_space": existing_space, "name": tab_name, "id": tab_index }
+endfunction
+
 function! <SID>add_tab_buffer()
   let current_buffer_id = bufnr("%")
   let vim_drawer_buffer_id = bufnr("VimDrawer")
@@ -94,41 +118,20 @@ function! <SID>add_tab_buffer()
   let l:previous_buffer_id = bufnr("#")
   let l:current_tab_id = tabpagenr()
 
-  let l:tabs = []
+  let l:match_space_tab = <SID>match_space_tab(current_buffer_name)
 
-  for tab_id in range(1, tabpagenr("$"))
-    call add(l:tabs, gettabvar(tab_id, "tablabel"))
-  endfor
-
-  let l:spaces = <SID>get_spaces()
-
-  for space_name in keys(spaces)
-    if strlen(matchstr(current_buffer_name, spaces[space_name]))
-      let l:tab_index = index(l:tabs, space_name)
-
-      if tab_index == -1
-        let l:tab_index = (current_tab_id + 1)
-        exec ":tabnew"
-        let t:tablabel = space_name
-        redraw!
-      else
-        let l:tab_index = (tab_index + 1)
-      endif
-    end
-  endfor
-
-  " there"s no space, so just let the process continues
-  if exists("l:tab_index")
-    exec ":tabn " . current_tab_id
-
+  if match_space_tab["existing_space"] && !match_space_tab["id"]
     exec ":b " . previous_buffer_id
-
-    exec ":tabn " . tab_index
-
+    exec ":tabnew"
+    call <SID>setup_tab()
+    let t:tablabel = match_space_tab["name"]
+    redraw!
+    exec ":b " . current_buffer_id
+  elseif match_space_tab["existing_space"] && match_space_tab["id"] != current_tab_id
+    exec ":b " . previous_buffer_id
+    exec ":tabn " . match_space_tab["id"]
     exec ":b " . current_buffer_id
   end
-
-  call <SID>setup_tab()
 
   if index(t:vim_drawer_list, bufnr("%")) == -1
     call add(t:vim_drawer_list, current_buffer_id)
