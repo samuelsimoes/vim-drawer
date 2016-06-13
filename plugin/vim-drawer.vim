@@ -127,21 +127,23 @@ function! <SID>add_tab_buffer()
   let l:current_tab_id = tabpagenr()
 
   let l:match_space_tab = <SID>match_space_tab(current_buffer_name)
+  let l:must_create_tab = !match_space_tab["id"]
+  let l:must_change_tab = match_space_tab["id"] != current_tab_id
 
-  if match_space_tab["existing_space"] && (!match_space_tab["id"] || match_space_tab["id"] != current_tab_id)
+  if match_space_tab["existing_space"] && (must_create_tab || must_change_tab)
     if previous_buffer_id == current_buffer_id
       exec ":enew"
     else
       exec ":b " . previous_buffer_id
     endif
 
-    if !match_space_tab["id"]
+    if must_create_tab
       exec ":tabnew"
       call <SID>setup_tab()
       let t:tablabel = match_space_tab["name"]
       redraw!
       exec ":b " . current_buffer_id
-    elseif  match_space_tab["id"] != current_tab_id
+    elseif  must_change_tab
       exec ":tabn " . match_space_tab["id"]
       exec ":b " . current_buffer_id
     end
