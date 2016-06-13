@@ -1,3 +1,11 @@
+if !&hid
+  echohl WarningMsg
+  echom "VimDrawer requires 'hidden' option enabled!"
+  echohl None
+
+  finish
+endif
+
 let s:dot_file_path = getcwd() . "/.vim-drawer.vim"
 
 if filereadable(s:dot_file_path)
