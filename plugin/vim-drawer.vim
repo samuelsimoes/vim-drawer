@@ -120,17 +120,23 @@ function! <SID>add_tab_buffer()
 
   let l:match_space_tab = <SID>match_space_tab(current_buffer_name)
 
-  if match_space_tab["existing_space"] && !match_space_tab["id"]
-    exec ":b " . previous_buffer_id
-    exec ":tabnew"
-    call <SID>setup_tab()
-    let t:tablabel = match_space_tab["name"]
-    redraw!
-    exec ":b " . current_buffer_id
-  elseif match_space_tab["existing_space"] && match_space_tab["id"] != current_tab_id
-    exec ":b " . previous_buffer_id
-    exec ":tabn " . match_space_tab["id"]
-    exec ":b " . current_buffer_id
+  if match_space_tab["existing_space"] && (!match_space_tab["id"] || match_space_tab["id"] != current_tab_id)
+    if previous_buffer_id == current_buffer_id
+      exec ":enew"
+    else
+      exec ":b " . previous_buffer_id
+    endif
+
+    if !match_space_tab["id"]
+      exec ":tabnew"
+      call <SID>setup_tab()
+      let t:tablabel = match_space_tab["name"]
+      redraw!
+      exec ":b " . current_buffer_id
+    elseif  match_space_tab["id"] != current_tab_id
+      exec ":tabn " . match_space_tab["id"]
+      exec ":b " . current_buffer_id
+    end
   end
 
   if index(t:vim_drawer_list, bufnr("%")) == -1
