@@ -15,7 +15,7 @@ end
 let s:all_vim_drawer_lists = []
 
 function! <SID>get_spaces()
-  return exists("g:vim_drawer_spaces") ? g:vim_drawer_spaces : {}
+  return exists("g:vim_drawer_spaces") ? g:vim_drawer_spaces : []
 endfunction
 
 augroup VimDrawerGroup
@@ -100,11 +100,12 @@ function! <SID>match_space_tab(file_path)
   let l:existing_space = 0
   let l:spaces = <SID>get_spaces()
 
-  for space_name in keys(spaces)
-    if strlen(matchstr(a:file_path, spaces[space_name]))
-      let l:tab_index = (index(tabs, space_name) + 1)
-      let l:tab_name = space_name
+  for space in spaces
+    if strlen(matchstr(a:file_path, space[1]))
+      let l:tab_index = (index(tabs, space[0]) + 1)
+      let l:tab_name = space[0]
       let l:existing_space = 1
+      break
     end
   endfor
 

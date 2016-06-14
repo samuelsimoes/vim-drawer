@@ -8,14 +8,14 @@ VimDrawer is Vim plugin to help you to work with many open files on Vim in a san
 
 First, you must be familiar with [Vim buffers](http://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/), if you are, the basic idea is to create **scoped buffer lists per tab** AND do a **file auto triage** to send your file to the correct tab based on the file type name. For now on I will call this tabs as "drawer".
 
-To use you must define the schema of your drawers using a [Vim dict.](http://learnvimscriptthehardway.stevelosh.com/chapters/37.html) on the global variable `g:vim_drawer_spaces` on your vimfiles. The dict's key is the _drawer name_ and the dict's value is the **RegExp to match the file name if it should or not go to the drawer**. Example:
+To use you must define the schema of your drawers using an array on the global variable `g:vim_drawer_spaces` on your vimfiles. The array's first position is the _drawer name_ and the second is the **RegExp to match the file name if it should or not go to the drawer**. Example:
 
 ```viml
 " ~/.vimrc
-let g:vim_drawer_spaces = {
-  \"model": "model",
-  \"controller": "controller"
-\}
+let g:vim_drawer_spaces = [
+  \["model", "model"],
+  \["controller", "controller"]
+\]
 ```
 
 In the example above every file that has `model` in the name goes to the tab named as **model**, your _models drawer_.
@@ -24,7 +24,7 @@ In the example above every file that has `model` in the name goes to the tab nam
 
 Any other file that hasn't the declared drawer destination goes to the current drawer.
 
-:bulb: You can define drawers schema per project by adding in your project's root the `.vim-drawer.vim` file, on this file you put the `g:vim_drawer_spaces` dict.
+:bulb: You can define drawers schema per project by adding in your project's root the `.vim-drawer.vim` file, on this file you must set the `g:vim_drawer_spaces` array.
 
 To check what files are in the drawer you will need to invoke the command  `:VimDrawer`. This command will open a horizontal split with a list of the current buffers in the drawer. To open the buffer just press `enter`.
 
