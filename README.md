@@ -48,3 +48,6 @@ You can install this plugin with Pathogen, Vundle and other plugin loaders.
 ##Is it a [vim-ctrl-space](https://github.com/vim-ctrlspace) copycat?
 
 This plugin is a simplified version of the awesome vim-ctrl-space plugin with the auto file classification feature (that I even had [shown to vim-ctrlspace folks](https://github.com/vim-ctrlspace/vim-ctrlspace/issues/177)). I decide to create a separate version mainly to implement the auto classification feature and because vim-ctrl-space IMHO could be much more simple at some aspects that I won't discourse here. Ping me on Twitter if you are interested.
+
+-------
+Samuel Simões ~ [@samuelsimoes](https://twitter.com/samuelsimoes) ~ [Blog](http://blog.samuelsimoes.com/)
