@@ -14,7 +14,9 @@ To use you must define the schema of your drawers using an array on the global v
 " ~/.vimrc
 let g:vim_drawer_spaces = [
   \["model", "model"],
-  \["controller", "controller"]
+  \["controller", "controller"],
+  \["view", "\.html\.erb$"],
+  \["asset", "\.[js|css]$"]
 \]
 ```
 
