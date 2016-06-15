@@ -6,7 +6,7 @@ VimDrawer is Vim plugin to help you to work with many open files on Vim in a san
 
 ##Usage
 
-First, you must be familiar with [Vim buffers](http://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/), if you are, the basic idea is to create **scoped buffer lists per tab** AND do a **file auto triage** to send your file to the correct tab based on the file type name. For now on I will call this tabs as "drawer".
+First, you must be familiar with [Vim buffers](http://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/), if you are, the basic idea is to create **scoped buffer lists per tab** AND do a **file auto classification** to send your file to the correct tab based on the file name. For now on I will call this tabs as "drawer".
 
 To use you must define the schema of your drawers using an array on the global variable `g:vim_drawer_spaces` on your vimfiles. The array's first position is the _drawer name_ and the second is the **RegExp to match the file name if it should or not go to the drawer**. Example:
 
@@ -47,4 +47,4 @@ You can install this plugin with Pathogen, Vundle and other plugin loaders.
 
 ##Is it a [vim-ctrl-space](https://github.com/vim-ctrlspace) copycat?
 
-This plugin is a simplified version of the awesome vim-ctrl-space plugin with the auto file triage feature (that I even had [shown to vim-ctrlspace folks](https://github.com/vim-ctrlspace/vim-ctrlspace/issues/177)). I decide to create a separate version mainly to implement the auto triage feature and because vim-ctrl-space IMHO could be much more simple at some aspects that I won't discourse here. Ping me on Twitter if you are interested.
+This plugin is a simplified version of the awesome vim-ctrl-space plugin with the auto file classification feature (that I even had [shown to vim-ctrlspace folks](https://github.com/vim-ctrlspace/vim-ctrlspace/issues/177)). I decide to create a separate version mainly to implement the auto classification feature and because vim-ctrl-space IMHO could be much more simple at some aspects that I won't discourse here. Ping me on Twitter if you are interested.
