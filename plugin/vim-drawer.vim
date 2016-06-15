@@ -177,7 +177,7 @@ function! <SID>render_list()
 
   silent! put! =buftext
 
-  exe "normal! Gdd"
+  exe "normal! G\"_dd"
 endfunction
 
 function! <SID>set_up_buffer()
