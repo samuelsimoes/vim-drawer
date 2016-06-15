@@ -173,6 +173,11 @@ function! <SID>open_vim_drawer()
 endfunction
 
 function! <SID>render_list()
+  setlocal modifiable
+  setlocal noreadonly
+
+  exe "normal! gg\"_dG"
+
   let l:buftext = ""
 
   for buffer_id in t:vim_drawer_list
@@ -186,6 +191,9 @@ function! <SID>render_list()
   silent! put! =buftext
 
   exe "normal! G\"_dd"
+
+  setlocal nomodifiable
+  setlocal readonly
 endfunction
 
 function! <SID>set_up_buffer()
@@ -196,15 +204,33 @@ function! <SID>set_up_buffer()
   setlocal buftype=nofile
   setlocal bufhidden=delete
   setlocal nobuflisted
-  setlocal nomodifiable
   setlocal nowrap
-  setlocal readonly
   setlocal cursorline
 
   exe (index(t:vim_drawer_list, t:current_buffer_id) + 1)
 
   noremap <silent><buffer> <CR> :call<SID>open_buffer()<CR>
   noremap <silent><buffer> q :bd!<CR>
+  noremap <silent><buffer><nowait> c :call<SID>close_buffer()<CR>
+endfunction
+
+function! <SID>close_buffer()
+  let l:buffer_position = (line(".") - 1)
+  let l:buffer_id = get(t:vim_drawer_list, buffer_position)
+
+  if getbufvar(buffer_id, "&mod")
+    let l:confirmation = input("This buffer has unsaved modifications, do you really want close? (y/n): ")
+
+    if confirmation == "y"
+      exec ":bd! " . buffer_id
+    else
+      return
+    end
+  else
+    exec ":bd " . buffer_id
+  end
+
+  call <SID>render_list()
 endfunction
 
 function! <SID>open_buffer()
