@@ -13,6 +13,7 @@ if filereadable(s:dot_file_path)
 end
 
 let s:all_vim_drawer_lists = []
+let s:auto_classification = 1
 
 function! <SID>get_spaces()
   return exists("g:vim_drawer_spaces") ? g:vim_drawer_spaces : []
@@ -25,6 +26,7 @@ augroup VimDrawerGroup
 augroup END
 
 command! VimDrawer :call <SID>open_vim_drawer()
+command! VimDrawerAutoClassificationToggle :call <SID>toggle_vim_drawer_auto_classification()
 
 function! VimDrawerTabLabel(tab_id)
   return gettabvar(a:tab_id, "tablabel")
@@ -67,6 +69,10 @@ if has("gui_running") && (&go =~# "e")
   set guitablabel=%{VimDrawerTabLabel(tabpagenr())}
   au BufEnter * set guitablabel=%{VimDrawerTabLabel(tabpagenr())}
 end
+
+function! <SID>toggle_vim_drawer_auto_classification()
+  let s:auto_classification = !s:auto_classification
+endfunction
 
 function! <SID>remove_tab_buffer()
   let removed_buffer_id = expand("<abuf>")
@@ -127,26 +133,28 @@ function! <SID>add_tab_buffer()
   let l:previous_buffer_id = bufnr("#")
   let l:current_tab_id = tabpagenr()
 
-  let l:match_space_tab = <SID>match_space_tab(current_buffer_name)
-  let l:must_create_tab = !match_space_tab["id"]
-  let l:must_change_tab = match_space_tab["id"] != current_tab_id
+  if s:auto_classification
+    let l:match_space_tab = <SID>match_space_tab(current_buffer_name)
+    let l:must_create_tab = !match_space_tab["id"]
+    let l:must_change_tab = match_space_tab["id"] != current_tab_id
 
-  if match_space_tab["existing_space"] && (must_create_tab || must_change_tab)
-    if previous_buffer_id == current_buffer_id
-      exec ":enew"
-    else
-      exec ":b " . previous_buffer_id
-    endif
+    if match_space_tab["existing_space"] && (must_create_tab || must_change_tab)
+      if previous_buffer_id == current_buffer_id
+        exec ":enew"
+      else
+        exec ":b " . previous_buffer_id
+      endif
 
-    if must_create_tab
-      exec ":tabnew"
-      call <SID>setup_tab()
-      let t:tablabel = match_space_tab["name"]
-      redraw!
-      exec ":b " . current_buffer_id
-    elseif  must_change_tab
-      exec ":tabn " . match_space_tab["id"]
-      exec ":b " . current_buffer_id
+      if must_create_tab
+        exec ":tabnew"
+        call <SID>setup_tab()
+        let t:tablabel = match_space_tab["name"]
+        redraw!
+        exec ":b " . current_buffer_id
+      elseif  must_change_tab
+        exec ":tabn " . match_space_tab["id"]
+        exec ":b " . current_buffer_id
+      end
     end
   end
 
