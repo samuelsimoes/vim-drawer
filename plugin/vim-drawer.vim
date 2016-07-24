@@ -124,7 +124,14 @@ function! <SID>add_tab_buffer()
 
   call <SID>setup_tab()
 
-  if index(t:vim_drawer_list, current_buffer_id) != -1 || current_buffer_id == vim_drawer_buffer_id || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted")
+  let l:current_buffer_index = index(t:vim_drawer_list, current_buffer_id)
+
+  if current_buffer_index != -1
+    call remove(t:vim_drawer_list, current_buffer_index)
+    call insert(t:vim_drawer_list, current_buffer_id, 0)
+  end
+
+  if current_buffer_index != -1 || current_buffer_id == vim_drawer_buffer_id || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted")
     return
   end
 
@@ -159,7 +166,7 @@ function! <SID>add_tab_buffer()
   end
 
   if index(t:vim_drawer_list, bufnr("%")) == -1
-    call add(t:vim_drawer_list, current_buffer_id)
+    call insert(t:vim_drawer_list, current_buffer_id, 0)
   end
 endfunction
 
