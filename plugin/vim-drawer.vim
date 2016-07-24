@@ -199,6 +199,7 @@ function! <SID>set_up_buffer()
   setlocal nomodifiable
   setlocal nowrap
   setlocal readonly
+  setlocal cursorline
 
   exe (index(t:vim_drawer_list, t:current_buffer_id) + 1)
 
