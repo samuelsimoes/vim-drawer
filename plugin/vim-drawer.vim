@@ -183,6 +183,8 @@ function! <SID>render_list()
   setlocal modifiable
   setlocal noreadonly
 
+  let l:to_back_line = line(".")
+
   exe "normal! gg\"_dG"
 
   let l:buftext = ""
@@ -198,6 +200,8 @@ function! <SID>render_list()
   silent! put! =buftext
 
   exe "normal! G\"_dd"
+
+  exe ":" . to_back_line
 
   setlocal nomodifiable
   setlocal readonly
