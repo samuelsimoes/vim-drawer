@@ -28,7 +28,7 @@ Any other file that hasn't the declared drawer destination goes to the current d
 
 :bulb: You can define drawers schema per project by adding in your project's root the `.vim-drawer.vim` file, on this file you must set the `g:vim_drawer_spaces` array.
 
-To check what files are in the drawer you will need to invoke the command  `:VimDrawer`. This command will open a horizontal split with a list of the current buffers in the drawer. To open the buffer just press `enter`. To close a buffer right on the selector just press `c`.
+To check what files are in the drawer you will need to invoke the command  `:VimDrawer`. This command will open a horizontal split with a list of the current buffers in the drawer. To open the buffer just press `enter`. To close a buffer right on the selector just press `c`. To just preview a buffer without leave the drawer press `space`.
 
 :bulb: You can map this command to a shortcut like:
 

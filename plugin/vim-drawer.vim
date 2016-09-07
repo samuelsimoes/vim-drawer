@@ -126,7 +126,7 @@ function! <SID>add_tab_buffer()
   let l:buffer_is_on_drawer = current_buffer_index != -1
   let l:this_buffer_is_vim_drawer = current_buffer_id == bufnr("VimDrawer")
 
-  if buffer_is_on_drawer
+  if buffer_is_on_drawer && (!exists("t:reorder_drawer") || t:reorder_drawer)
     call remove(t:vim_drawer_list, current_buffer_index)
     call insert(t:vim_drawer_list, current_buffer_id, 0)
   end
@@ -222,6 +222,7 @@ function! <SID>set_up_buffer()
   noremap <silent><buffer> <CR> :call<SID>open_buffer()<CR>
   noremap <silent><buffer> q :bd!<CR>
   noremap <silent><buffer><nowait> c :call<SID>close_buffer()<CR>
+  noremap <silent><buffer><nowait> <space> :call<SID>preview_buffer()<CR>
 endfunction
 
 function! <SID>close_buffer()
@@ -242,11 +243,11 @@ function! <SID>close_buffer()
   end
 
   let l:drawer_is_empty = len(t:vim_drawer_list) == 0
-  let l:close_open_buffer = current_buffer_id == buffer_id
+  let l:only_vim_drawer_opened = winnr("$") == 1
 
   if drawer_is_empty
     exec ":bd"
-  elseif close_open_buffer
+  elseif only_vim_drawer_opened
     exec ":b " . get(t:vim_drawer_list, 0)
     call <SID>open_vim_drawer()
   else
@@ -254,7 +255,19 @@ function! <SID>close_buffer()
   end
 endfunction
 
+function! <SID>preview_buffer()
+  let t:reorder_drawer = 0
+  let l:buffer_position = (line(".") - 1)
+
+  exe "wincmd p"
+
+  exec ":b " . get(t:vim_drawer_list, buffer_position)
+
+  exe "wincmd p"
+endfunction
+
 function! <SID>open_buffer()
+  let t:reorder_drawer = 1
   let l:buffer_position = (line(".") - 1)
   let l:buflistnr = bufnr("VimDrawer")
 
