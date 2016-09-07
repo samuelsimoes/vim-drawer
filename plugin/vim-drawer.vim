@@ -226,6 +226,7 @@ function! <SID>set_up_buffer()
 endfunction
 
 function! <SID>close_buffer()
+  let l:current_buffer_id = bufnr("#")
   let l:buffer_position = (line(".") - 1)
   let l:buffer_id = get(t:vim_drawer_list, buffer_position)
 
@@ -241,7 +242,17 @@ function! <SID>close_buffer()
     exec ":bd " . buffer_id
   end
 
-  call <SID>render_list()
+  let l:drawer_is_empty = len(t:vim_drawer_list) == 0
+  let l:close_open_buffer = current_buffer_id == buffer_id
+
+  if drawer_is_empty
+    exec ":bd"
+  elseif close_open_buffer
+    exec ":b " . get(t:vim_drawer_list, 0)
+    call <SID>open_vim_drawer()
+  else
+    call <SID>render_list()
+  end
 endfunction
 
 function! <SID>open_buffer()
