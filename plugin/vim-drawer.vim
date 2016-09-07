@@ -272,7 +272,9 @@ function! <SID>open_buffer()
   let l:buffer_position = (line(".") - 1)
   let l:buflistnr = bufnr("VimDrawer")
 
-  exec ":bd! " . buflistnr
+  exe "wincmd p"
 
   exec ":b " . get(t:vim_drawer_list, buffer_position)
+
+  exec ":bd! " . buflistnr
 endfunction
