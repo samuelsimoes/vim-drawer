@@ -119,23 +119,22 @@ function! <SID>match_space_tab(file_path)
 endfunction
 
 function! <SID>add_tab_buffer()
-  let current_buffer_id = bufnr("%")
-  let vim_drawer_buffer_id = bufnr("VimDrawer")
-
   call <SID>setup_tab()
 
+  let l:current_buffer_id = bufnr("%")
   let l:current_buffer_index = index(t:vim_drawer_list, current_buffer_id)
+  let l:buffer_is_on_drawer = current_buffer_index != -1
+  let l:this_buffer_is_vim_drawer = current_buffer_id == bufnr("VimDrawer")
 
-  if current_buffer_index != -1
+  if buffer_is_on_drawer
     call remove(t:vim_drawer_list, current_buffer_index)
     call insert(t:vim_drawer_list, current_buffer_id, 0)
   end
 
-  if current_buffer_index != -1 || current_buffer_id == vim_drawer_buffer_id || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted")
+  if buffer_is_on_drawer || this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted")
     return
   end
 
-  let l:current_buffer_id = bufnr("%")
   let l:current_buffer_name = bufname(current_buffer_id)
   let l:previous_buffer_id = bufnr("#")
   let l:current_tab_id = tabpagenr()
