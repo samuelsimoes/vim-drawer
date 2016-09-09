@@ -220,6 +220,7 @@ function! <SID>set_up_buffer()
   exe (index(t:vim_drawer_list, t:current_buffer_id) + 1)
 
   noremap <silent><buffer> <CR> :call<SID>open_buffer()<CR>
+  noremap <silent><buffer><nowait> o :call<SID>open_buffer()<CR>
   noremap <silent><buffer> q :bd!<CR>
   noremap <silent><buffer><nowait> c :call<SID>close_buffer()<CR>
   noremap <silent><buffer><nowait> <space> :call<SID>preview_buffer()<CR>
