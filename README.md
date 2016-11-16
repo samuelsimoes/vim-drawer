@@ -2,7 +2,7 @@
 
 :point_right: When you work with some big tasks you may need edit too many files at once and most of the time you may get lost in so many files.
 
-VimDrawer is Vim plugin to help you to work with many open files on Vim in a sane way.
+VimDrawer is a Vim plugin to help you to work with many open files on Vim in a sane way.
 
 ##Usage
 
