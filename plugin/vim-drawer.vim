@@ -145,7 +145,7 @@ function! <SID>add_tab_buffer()
     let l:must_change_tab = match_space_tab["id"] != current_tab_id
 
     if match_space_tab["existing_space"] && (must_create_tab || must_change_tab)
-      if previous_buffer_id == current_buffer_id
+      if previous_buffer_id == -1 || previous_buffer_id == current_buffer_id
         exec ":enew"
       else
         exec ":b " . previous_buffer_id
