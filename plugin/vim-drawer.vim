@@ -188,7 +188,7 @@ function! <SID>render_list()
   let l:buftext = ""
 
   for buffer_id in t:vim_drawer_list
-    let bufname = bufname(buffer_id)
+    let bufname = substitute(bufname(buffer_id), getcwd() . "/", "", "g")
     if !strlen(bufname)
       let bufname = "--Unsaved Buffer--"
     end
