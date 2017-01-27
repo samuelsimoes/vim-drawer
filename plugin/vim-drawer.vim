@@ -152,11 +152,10 @@ function! <SID>add_tab_buffer()
       endif
 
       if must_create_tab
-        exec ":tabnew"
+        exec ":tab sb " . current_buffer_id
         call <SID>setup_tab()
         let t:tablabel = match_space_tab["name"]
         redraw!
-        exec ":b " . current_buffer_id
       elseif  must_change_tab
         exec ":tabn " . match_space_tab["id"]
         exec ":b " . current_buffer_id
