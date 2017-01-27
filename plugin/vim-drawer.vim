@@ -145,14 +145,17 @@ function! <SID>add_tab_buffer()
     let l:must_change_tab = match_space_tab["id"] != current_tab_id
 
     if match_space_tab["existing_space"] && (must_create_tab || must_change_tab)
-      if previous_buffer_id == -1 || previous_buffer_id == current_buffer_id
+      if previous_buffer_id == current_buffer_id
         exec ":enew"
-      else
+      elseif previous_buffer_id != -1
         exec ":b " . previous_buffer_id
       endif
 
       if must_create_tab
-        exec ":tab sb " . current_buffer_id
+        if previous_buffer_id != -1
+          exec ":tab sb " . current_buffer_id
+        end
+
         call <SID>setup_tab()
         let t:tablabel = match_space_tab["name"]
         redraw!
