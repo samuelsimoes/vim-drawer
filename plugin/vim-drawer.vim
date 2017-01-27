@@ -93,7 +93,7 @@ function! <SID>setup_tab()
   end
 endfunction
 
-function! <SID>match_space_tab(file_path)
+function! <SID>match_drawer(file_path)
   let l:tabs = []
 
   for tab_id in range(1, tabpagenr("$"))
@@ -103,19 +103,19 @@ function! <SID>match_space_tab(file_path)
   let l:tab_name = 0
   let l:tab_index = 0
   " VimL sucks a lot so I can't check at the space name to check if it exists
-  let l:existing_space = 0
+  let l:existing_drawer = 0
   let l:spaces = <SID>get_spaces()
 
   for space in spaces
     if strlen(matchstr(a:file_path, space[1]))
       let l:tab_index = (index(tabs, space[0]) + 1)
       let l:tab_name = space[0]
-      let l:existing_space = 1
+      let l:existing_drawer = 1
       break
     end
   endfor
 
-  return { "existing_space": existing_space, "name": tab_name, "id": tab_index }
+  return { "existing_drawer": existing_drawer, "tab_name": tab_name, "tab_id": tab_index }
 endfunction
 
 function! <SID>add_tab_buffer()
@@ -140,11 +140,11 @@ function! <SID>add_tab_buffer()
   let l:current_tab_id = tabpagenr()
 
   if s:auto_classification
-    let l:match_space_tab = <SID>match_space_tab(current_buffer_name)
-    let l:must_create_tab = !match_space_tab["id"]
-    let l:must_change_tab = match_space_tab["id"] != current_tab_id
+    let l:match_drawer = <SID>match_drawer(current_buffer_name)
+    let l:must_create_tab = !match_drawer["tab_id"]
+    let l:must_change_tab = match_drawer["tab_id"] != current_tab_id
 
-    if match_space_tab["existing_space"] && (must_create_tab || must_change_tab)
+    if match_drawer["existing_drawer"] && (must_create_tab || must_change_tab)
       if previous_buffer_id == current_buffer_id
         exec ":enew"
       elseif previous_buffer_id != -1
@@ -157,10 +157,10 @@ function! <SID>add_tab_buffer()
         end
 
         call <SID>setup_tab()
-        let t:tablabel = match_space_tab["name"]
+        let t:tablabel = match_drawer["tab_name"]
         redraw!
       elseif  must_change_tab
-        exec ":tabn " . match_space_tab["id"]
+        exec ":tabn " . match_drawer["tab_id"]
         exec ":b " . current_buffer_id
       end
     end
