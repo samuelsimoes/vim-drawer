@@ -143,16 +143,19 @@ function! <SID>add_tab_buffer()
     let l:match_drawer = <SID>match_drawer(current_buffer_name)
     let l:must_create_tab = !match_drawer["tab_id"]
     let l:must_change_tab = match_drawer["tab_id"] != current_tab_id
+    let l:is_first_buffer = current_buffer_id == 1
 
     if match_drawer["existing_drawer"] && (must_create_tab || must_change_tab)
-      if previous_buffer_id == current_buffer_id
-        exec ":enew"
-      elseif previous_buffer_id != -1
-        exec ":b " . previous_buffer_id
-      endif
+      if !is_first_buffer
+        if previous_buffer_id == current_buffer_id
+          exec ":enew"
+        else
+          exec ":b " . previous_buffer_id
+        endif
+      end
 
       if must_create_tab
-        if previous_buffer_id != -1
+        if !is_first_buffer
           exec ":tab sb " . current_buffer_id
         end
 
