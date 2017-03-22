@@ -1,10 +1,10 @@
-#VimDrawer
+# VimDrawer
 
 :point_right: When you work with some big tasks you may need edit too many files at once and most of the time you may get lost in so many files.
 
 VimDrawer is a Vim plugin to help you to work with many open files on Vim in a sane way.
 
-##Usage
+## Usage
 
 First, you must be familiar with [Vim buffers](http://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/), if you are, the basic idea is to create **scoped buffer lists per tab** AND do a **file auto classification** to send your file to the correct tab based on the file name. For now on I will call this tabs as "drawer".
 
@@ -37,11 +37,11 @@ nnoremap <C-Space> :VimDrawer<CR>
 ```
 Now you can invoke the drawer's buffers selector pressing `Ctrl + Space`.
 
-##Installation
+## Installation
 
 You can install this plugin with Pathogen, Vundle and other plugin loaders.
 
-##Is it a [vim-ctrl-space](https://github.com/vim-ctrlspace) copycat?
+## Is it a [vim-ctrl-space](https://github.com/vim-ctrlspace) copycat?
 
 This plugin is a simplified version of the awesome vim-ctrl-space plugin with the auto file classification feature (that I even had [shown to vim-ctrlspace folks](https://github.com/vim-ctrlspace/vim-ctrlspace/issues/177)). I decide to create a separate version mainly to implement the auto classification feature and because vim-ctrl-space IMHO could be much more simple at some aspects that I won't discourse here. Ping me on Twitter if you are interested.
 
