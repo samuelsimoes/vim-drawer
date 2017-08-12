@@ -131,11 +131,12 @@ function! <SID>add_tab_buffer()
     call insert(t:vim_drawer_list, current_buffer_id, 0)
   end
 
-  if buffer_is_on_drawer || this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted")
+  let l:current_buffer_name = bufname(current_buffer_id)
+
+  if buffer_is_on_drawer || this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted") || current_buffer_name =~ "NERD_tree_"
     return
   end
 
-  let l:current_buffer_name = bufname(current_buffer_id)
   let l:previous_buffer_id = bufnr("#")
   let l:current_tab_id = tabpagenr()
 
