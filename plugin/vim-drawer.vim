@@ -27,6 +27,32 @@ augroup END
 
 command! VimDrawer :call <SID>open_vim_drawer()
 command! VimDrawerAutoClassificationToggle :call <SID>toggle_vim_drawer_auto_classification()
+command! VimDrawerPreviousBuffer :call <SID>previous_buffer()
+command! VimDrawerNextBuffer :call <SID>next_buffer()
+
+function! <SID>next_buffer()
+  let l:current_buffer_id = bufnr("%")
+  let l:current_buffer_index = index(t:vim_drawer_list, current_buffer_id)
+  let t:skip_order = 1
+
+  if current_buffer_index == (len(t:vim_drawer_list) - 1)
+    exec ":b " . get(t:vim_drawer_list, 0)
+  else
+    exec ":b " . get(t:vim_drawer_list, (current_buffer_index + 1))
+  end
+endfunction
+
+function! <SID>previous_buffer()
+  let l:current_buffer_id = bufnr("%")
+  let l:current_buffer_index = index(t:vim_drawer_list, current_buffer_id)
+  let t:skip_order = 1
+
+  if (current_buffer_index - 1) == -1
+    exec ":b " . get(t:vim_drawer_list, len(t:vim_drawer_list) - 1)
+  else
+    exec ":b " . get(t:vim_drawer_list, current_buffer_index - 1)
+  end
+endfunction
 
 function! VimDrawerTabLabel(tab_id)
   return gettabvar(a:tab_id, "tablabel")
@@ -126,9 +152,13 @@ function! <SID>add_tab_buffer()
   let l:buffer_is_on_drawer = current_buffer_index != -1
   let l:this_buffer_is_vim_drawer = current_buffer_id == bufnr("VimDrawer")
 
-  if buffer_is_on_drawer && (!exists("t:reorder_drawer") || t:reorder_drawer)
+  if !exists("t:skip_order") && buffer_is_on_drawer && (!exists("t:reorder_drawer") || t:reorder_drawer)
     call remove(t:vim_drawer_list, current_buffer_index)
     call insert(t:vim_drawer_list, current_buffer_id, 0)
+  end
+
+  if exists("t:skip_order")
+    unlet t:skip_order
   end
 
   let l:current_buffer_name = bufname(current_buffer_id)
