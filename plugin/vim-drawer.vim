@@ -22,6 +22,7 @@ endfunction
 augroup VimDrawerGroup
   autocmd!
   au BufEnter * call <SID>add_tab_buffer()
+  au BufWritePost * call <SID>add_tab_buffer()
   au BufDelete * call <SID>remove_tab_buffer()
 augroup END
 
