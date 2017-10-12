@@ -148,60 +148,68 @@ function! <SID>add_tab_buffer()
   call <SID>setup_tab()
 
   let l:current_buffer_id = bufnr("%")
-  let l:current_buffer_index = index(t:vim_drawer_list, current_buffer_id)
-  let l:buffer_is_on_drawer = current_buffer_index != -1
   let l:this_buffer_is_vim_drawer = current_buffer_id == bufnr("VimDrawer")
-
-  if !exists("t:skip_order") && buffer_is_on_drawer && (!exists("t:reorder_drawer") || t:reorder_drawer)
-    call remove(t:vim_drawer_list, current_buffer_index)
-    call insert(t:vim_drawer_list, current_buffer_id, 0)
-  end
-
-  if exists("t:skip_order")
-    unlet t:skip_order
-  end
-
   let l:current_buffer_name = bufname(current_buffer_id)
 
-  if buffer_is_on_drawer || this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted") || current_buffer_name =~ "NERD_tree_"
+  if this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted") || current_buffer_name =~ "NERD_tree_"
     return
   end
 
-  let l:previous_buffer_id = bufnr("#")
-  let l:current_tab_id = tabpagenr()
-
   if s:auto_classification
+    let l:current_tab_id = tabpagenr()
     let l:match_drawer = <SID>match_drawer(current_buffer_name)
     let l:must_create_tab = !match_drawer["tab_id"]
     let l:must_change_tab = match_drawer["tab_id"] != current_tab_id
-    let l:is_first_buffer = current_buffer_id == 1
+    let l:buffers = filter(range(1, bufnr("$")), "bufexists(v:val)")
+
+    if len(buffers) == 1 && match_drawer["existing_drawer"] && (must_create_tab || must_change_tab)
+      let t:tablabel = match_drawer["tab_name"]
+      call insert(t:vim_drawer_list, current_buffer_id, 0)
+      redraw!
+      return
+    endif
+
+    let l:current_buffer_drawer_index = index(t:vim_drawer_list, current_buffer_id)
 
     if match_drawer["existing_drawer"] && (must_create_tab || must_change_tab)
-      if !is_first_buffer
-        if previous_buffer_id == current_buffer_id
-          exec ":enew"
-        else
-          exec ":b " . previous_buffer_id
-        endif
+      if current_buffer_drawer_index != -1
+        call remove(t:vim_drawer_list, current_buffer_drawer_index)
       end
 
-      if must_create_tab
-        if !is_first_buffer
-          exec ":tab sb " . current_buffer_id
-        end
+      if !len(t:vim_drawer_list)
+        exec ":enew"
+        call insert(t:vim_drawer_list, bufnr("%"), 0)
+      else
+        exec ":b " . get(t:vim_drawer_list, 0)
+      endif
 
+      if must_create_tab
+        exec ":tab sb " . current_buffer_id
         call <SID>setup_tab()
         let t:tablabel = match_drawer["tab_name"]
+        call insert(t:vim_drawer_list, current_buffer_id, 0)
         redraw!
       elseif  must_change_tab
         exec ":tabn " . match_drawer["tab_id"]
         exec ":b " . current_buffer_id
+        if index(t:vim_drawer_list, current_buffer_id) == -1
+          call insert(t:vim_drawer_list, current_buffer_id, 0)
+        end
       end
     end
   end
 
-  if index(t:vim_drawer_list, bufnr("%")) == -1
+  if index(t:vim_drawer_list, current_buffer_id) == -1
     call insert(t:vim_drawer_list, current_buffer_id, 0)
+  else
+    if !exists("t:skip_order") && (!exists("t:reorder_drawer") || t:reorder_drawer)
+      call remove(t:vim_drawer_list, current_buffer_drawer_index)
+      call insert(t:vim_drawer_list, current_buffer_id, 0)
+    end
+
+    if exists("t:skip_order")
+      unlet t:skip_order
+    end
   end
 endfunction
 
