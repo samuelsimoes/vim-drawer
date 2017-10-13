@@ -12,7 +12,6 @@ if filereadable(s:dot_file_path)
   exe "source " . s:dot_file_path
 end
 
-let s:all_vim_drawer_lists = []
 let s:auto_classification = 1
 
 function! <SID>get_spaces()
@@ -102,21 +101,22 @@ function! <SID>toggle_vim_drawer_auto_classification()
 endfunction
 
 function! <SID>remove_tab_buffer()
-  let removed_buffer_id = expand("<abuf>")
+  let removed_buffer_id = str2nr(expand("<abuf>"))
 
-  for vim_drawer_list in s:all_vim_drawer_lists
-    for buffer_id in vim_drawer_list
-      if buffer_id == removed_buffer_id
-        call remove(vim_drawer_list, index(vim_drawer_list, buffer_id))
-      end
-    endfor
+  for tab_id in range(1, tabpagenr("$"))
+    let list = gettabvar(tab_id, "vim_drawer_list")
+    let removed_buffer_index = index(list, removed_buffer_id)
+
+    if removed_buffer_index != -1
+      call remove(list, removed_buffer_index)
+      call settabvar(tab_id, "vim_drawer_list", list)
+    end
   endfor
 endfunction
 
 function! <SID>setup_tab()
   if !exists("t:vim_drawer_list")
     let t:vim_drawer_list = []
-    call add(s:all_vim_drawer_lists, t:vim_drawer_list)
   end
 endfunction
 
