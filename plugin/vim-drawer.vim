@@ -23,6 +23,7 @@ augroup VimDrawerGroup
   au BufEnter * call <SID>add_tab_buffer()
   au BufWritePost * call <SID>add_tab_buffer()
   au BufDelete * call <SID>remove_tab_buffer()
+  au BufWinLeave * call <SID>buf_win_leave()
 augroup END
 
 command! VimDrawer :call <SID>open_vim_drawer()
@@ -100,18 +101,71 @@ function! <SID>toggle_vim_drawer_auto_classification()
   let s:auto_classification = !s:auto_classification
 endfunction
 
-function! <SID>remove_tab_buffer()
-  let removed_buffer_id = str2nr(expand("<abuf>"))
+function! <SID>buf_win_leave()
+  if exists("g:tab_that_probably_will_close")
+    unlet g:tab_that_probably_will_close
+  end
+
+  let leaving_buffer_id = str2nr(expand("<abuf>"))
 
   for tab_id in range(1, tabpagenr("$"))
     let list = gettabvar(tab_id, "vim_drawer_list")
-    let removed_buffer_index = index(list, removed_buffer_id)
+    let removed_buffer_index = index(list, leaving_buffer_id)
+    let tab_windows_ids = gettabinfo(tab_id)[0]['windows']
+
+    " If the leaving buffer was loaded in the only window of a tab, this tab
+    " PROBABLY will automatically be closed by Vim, and I say probably because
+    " only on BufDelete autcommand that we going to have this confirmation.
+    "
+    " If the leaving buffer was leaving because he was deleted, on the BufDelete
+    " we can recreate the deleted tab that could still have some other buffers
+    " on the drawer.
+    if removed_buffer_index != -1 && len(tab_windows_ids) == 1 && getwininfo(tab_windows_ids[0])[0]["bufnr"] == leaving_buffer_id
+      let label = gettabvar(tab_id, "tablabel")
+      let g:tab_that_probably_will_close = {
+        \"tab_id": tab_id,
+        \"leaving_buffer_id": leaving_buffer_id,
+        \"label": label,
+        \"drawer": list
+      \}
+    end
+  endfor
+endfunction
+
+function! <SID>remove_tab_buffer()
+  let leaving_buffer_id = str2nr(expand("<abuf>"))
+
+  for tab_id in range(1, tabpagenr("$"))
+    let list = gettabvar(tab_id, "vim_drawer_list")
+    let removed_buffer_index = index(list, leaving_buffer_id)
 
     if removed_buffer_index != -1
       call remove(list, removed_buffer_index)
       call settabvar(tab_id, "vim_drawer_list", list)
     end
   endfor
+
+  let current_tab_id = tabpagenr()
+
+  if exists("g:tab_that_probably_will_close") && g:tab_that_probably_will_close["leaving_buffer_id"] == leaving_buffer_id
+    let list = g:tab_that_probably_will_close["drawer"]
+
+    call remove(list, index(list, leaving_buffer_id))
+
+    " Here at this point, we have the information that the deleted buffer took
+    " its tab out and now we need to check if the deleted tab's drawer still
+    " has some other buffers, if it still, we need recreate this tab in the same
+    " position.
+    if len(list)
+      execute (g:tab_that_probably_will_close["tab_id"] - 1) . "tabnew"
+      let empty_buffer = bufnr("%")
+      execute "b " . list[0]
+      execute "bd " . empty_buffer
+      let t:tablabel = g:tab_that_probably_will_close["label"]
+      let t:vim_drawer_list = list
+      redraw!
+    end
+  end
 endfunction
 
 function! <SID>setup_tab()
