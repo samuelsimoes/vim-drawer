@@ -30,6 +30,11 @@ command! VimDrawer :call <SID>open_vim_drawer()
 command! VimDrawerAutoClassificationToggle :call <SID>toggle_vim_drawer_auto_classification()
 command! VimDrawerPreviousBuffer :call <SID>previous_buffer()
 command! VimDrawerNextBuffer :call <SID>next_buffer()
+command! VimDrawerTogglePrevBuffer :call <SID>toggle_prev_buffer()
+
+function! <SID>toggle_prev_buffer()
+  exec ":b " . g:previous_vim_drawer_buffer_id
+endfunction
 
 function! <SID>next_buffer()
   let l:current_buffer_id = bufnr("%")
@@ -223,6 +228,19 @@ function! <SID>add_tab_buffer()
       redraw!
       return
     endif
+
+    if !exists('g:previous_vim_drawer_buffer_id')
+      let g:previous_vim_drawer_buffer_id = current_buffer_id
+    endif
+
+    if !exists('g:current_vim_drawer_buffer_id')
+      let g:current_vim_drawer_buffer_id = current_buffer_id
+    endif
+
+    if g:current_vim_drawer_buffer_id != current_buffer_id
+      let g:previous_vim_drawer_buffer_id = g:current_vim_drawer_buffer_id
+      let g:current_vim_drawer_buffer_id = current_buffer_id
+    end
 
     for tab_id in range(1, tabpagenr('$'))
       if tab_id != current_tab_id
