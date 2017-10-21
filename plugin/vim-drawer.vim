@@ -224,6 +224,31 @@ function! <SID>add_tab_buffer()
       return
     endif
 
+    for tab_id in range(1, tabpagenr('$'))
+      if tab_id != current_tab_id
+        let list = gettabvar(tab_id, 'vim_drawer_list')
+
+        if index(list, current_buffer_id) != -1
+          let already_in_the_drawer_id = tab_id
+          break
+        end
+      end
+    endfor
+
+    if exists('already_in_the_drawer_id')
+      exec ":b " . get(t:vim_drawer_list, 0)
+      exec ":tabn " . already_in_the_drawer_id
+      exec ":b " . current_buffer_id
+
+      let current_buffer_drawer_index = index(t:vim_drawer_list, current_buffer_id)
+
+      if exists("t:reorder_drawer") && t:reorder_drawer
+        call remove(t:vim_drawer_list, current_buffer_drawer_index)
+        call insert(t:vim_drawer_list, current_buffer_id, 0)
+      end
+      return
+    end
+
     let l:current_buffer_drawer_index = index(t:vim_drawer_list, current_buffer_id)
 
     if match_drawer["existing_drawer"] && (must_create_tab || must_change_tab)
