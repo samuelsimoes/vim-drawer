@@ -19,6 +19,10 @@ function! <SID>get_spaces()
   return exists("g:vim_drawer_spaces") ? g:vim_drawer_spaces : []
 endfunction
 
+function! <SID>get_exclude_regex()
+  return exists("g:vim_drawer_exclude_regex") ? g:vim_drawer_exclude_regex : "NERD_tree_"
+endfunction
+
 augroup VimDrawerGroup
   autocmd!
   au BufEnter * call <SID>add_tab_buffer()
@@ -163,7 +167,7 @@ function! <SID>add_tab_buffer()
 
   let l:current_buffer_name = bufname(current_buffer_id)
 
-  if buffer_is_on_drawer || this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted") || current_buffer_name =~ "NERD_tree_"
+  if buffer_is_on_drawer || this_buffer_is_vim_drawer || !getbufvar(current_buffer_id, "&modifiable") || !getbufvar(current_buffer_id, "&buflisted") || current_buffer_name =~ <SID>get_exclude_regex()
     return
   end
 
